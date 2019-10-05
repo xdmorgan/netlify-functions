@@ -20,7 +20,7 @@ POST a JSON body with the following structure:
 
 ## API Key & Env Config
 
-A `MAILCHIMP_API_KEY` is required and should have rights to modify the desired list id. See Netlify docs for adding env vars and Mailchimp for API key creation.
+A `MAILCHIMP_API_KEY` is required and should have permissions to modify the desired list id. See Netlify docs for adding env vars and Mailchimp for API key creation.
 
 ## Requests
 

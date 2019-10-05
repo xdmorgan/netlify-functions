@@ -8,24 +8,30 @@ exports.handler = async (event, context) => {
   // Validate env config
   const checked_env = check_env(process.env);
   if (!checked_env.valid) return checked_env.error_response;
+
   // Validate request body
   const { body, ...checked_body } = check_body(event.body);
   if (!checked_body.valid) return checked_body.error_response;
+
   // Create MC API class
   const mc_api = new Mailchimp(MAILCHIMP_API_KEY);
+
   // Read from parsed body
   const { email, list_id, interests = [] } = body;
+
   // Check if user already exists
   const checked_member = await check_member_exists({ email, list_id }, mc_api);
   if (checked_member.exists && checked_member.is_subscribed) {
     return checked_member.success_response;
   }
+
   // user exists but isn't currently subscribed
   if (checked_member.exists && !checked_member.is_subscribed) {
     const update_opts = { email, list_id, status: "subscribed", interests };
     const updated = await update_member(update_opts, mc_api);
     return updated.success_response;
   }
+
   // No existing user, create a new one
   const create_opts = { email, list_id, status: "subscribed", interests };
   const created = await create_member(create_opts, mc_api);
