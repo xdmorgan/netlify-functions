@@ -1,0 +1,22 @@
+{
+  "name": "mailchimp-subscribe",
+  "version": "1.0.0",
+  "description": "A Netlify-hosted Mailchimp subscription lambda function",
+  "main": "mailchimp-subscribe.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "netlify",
+    "serverless",
+    "apis",
+    "email",
+    "mailchimp",
+    "js"
+  ],
+  "author": "Dan Morgan",
+  "license": "MIT",
+  "dependencies": {
+    "mailchimp-api-v3": "^1.13.1"
+  }
+}
