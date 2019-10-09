@@ -20,13 +20,23 @@ exports.handler = async (event, context) => {
   const { email, list_id, interests = [] } = body;
 
   // Check if user already exists
-  const checked_member = await check_member_exists({ email, list_id }, mc_api);
-  if (checked_member.exists && checked_member.is_subscribed) {
+  const checked_member = await check_existing(
+    { email, list_id, interests },
+    mc_api
+  );
+  if (
+    checked_member.exists &&
+    checked_member.is_subscribed &&
+    checked_member.has_interests
+  ) {
     return checked_member.success_response;
   }
 
-  // user exists but isn't currently subscribed
-  if (checked_member.exists && !checked_member.is_subscribed) {
+  // user exists but isnt subscribes or lacks interest(s)
+  if (
+    checked_member.exists &&
+    (!checked_member.is_subscribed || !checked_member.has_interests)
+  ) {
     const update_opts = { email, list_id, status: "subscribed", interests };
     const updated = await update_member(update_opts, mc_api);
     return updated.success_response;
@@ -62,20 +72,21 @@ function check_body(request_body = {}) {
   };
 }
 
-// TODO: Diff interests to see whether there's another update case
-async function check_member_exists({ email, list_id }, api) {
+async function check_existing({ email, list_id, interests }, api) {
   const hash = create_md5_hash(email);
   const path = `/lists/${list_id}/members/${hash}`;
-  let [status, error] = [null, null];
+  let [status, error, has_interests] = [null, null, null];
   try {
     const result = await api.get({ path });
     status = result.status;
+    has_interests = has_all_interests(interests, result.interests);
   } catch (e) {
     error = e.message;
   }
   return {
     exists: !!status,
     is_subscribed: status === "subscribed",
+    has_interests,
     status,
     error,
     success_response: response({
@@ -155,4 +166,12 @@ function create_md5_hash(email) {
     .createHash("md5")
     .update(email)
     .digest("hex");
+}
+
+function compare_interests(should_have, all) {
+  return should_have.map(interest => all[interest]);
+}
+
+function has_all_interests(should_have, all) {
+  return !compare_interests(should_have, all).some(x => x === false);
 }
