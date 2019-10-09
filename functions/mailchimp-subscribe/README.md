@@ -26,8 +26,8 @@ A `MAILCHIMP_API_KEY` is required and should have permissions to modify the desi
 
 1. Check if existing audience member
 
-   - If existing and subscribed: done
-   - If existing but unsubscribed, resubscribe: done
-   - `TODO`: also diff interests and update if necessary
+   - If existing and subscribed and done
+   - If existing but unsubscribed, resubscribe and done
+   - If existing but missing interests, update preferences and done
 
 1. Add subscriber to list, with optional interests
